@@ -6,6 +6,7 @@ toolchain go1.22.8
 
 require (
 	github.com/99designs/gqlgen v0.17.55
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-migrate/migrate v3.5.4+incompatible
