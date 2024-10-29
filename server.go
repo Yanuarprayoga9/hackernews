@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi/v5"
 	hackernews "github.com/yanuar/hackernews/graph"
+	"github.com/yanuar/hackernews/internal/auth"
 	database "github.com/yanuar/hackernews/internal/pkg/db/migrations/mysql"
 )
+
 
 const defaultPort = "8080"
 
@@ -22,8 +24,9 @@ func main() {
 
 	router := chi.NewRouter()
 
+	router.Use(auth.Middleware())
+
 	database.InitDB()
-	defer database.CloseDB()
 	database.Migrate()
 	server := handler.NewDefaultServer(hackernews.NewExecutableSchema(hackernews.Config{Resolvers: &hackernews.Resolver{}}))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))

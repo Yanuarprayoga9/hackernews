@@ -11,6 +11,8 @@ import (
 
 	"github.com/yanuar/hackernews/graph/model"
 	"github.com/yanuar/hackernews/internal/links"
+	"github.com/yanuar/hackernews/internal/pkg/jwt"
+	"github.com/yanuar/hackernews/internal/users"
 )
 
 // CreateLink is the resolver for the createLink field.
@@ -19,12 +21,20 @@ func (r *mutationResolver) CreateLink(ctx context.Context, input model.NewLink) 
 	link.Address = input.Address
 	link.Title = input.Title
 	linkID := link.Save()
-	return &model.Link{ID: strconv.FormatInt(linkID, 10), Title:link.Title, Address:link.Address}, nil
+	return &model.Link{ID: strconv.FormatInt(linkID, 10), Title: link.Title, Address: link.Address}, nil
 }
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (string, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	var user users.User
+	user.Username = input.Username
+	user.Password = input.Password
+	user.Create()
+	token, err := jwt.GenerateToken(user.Username)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 // Login is the resolver for the login field.
@@ -42,8 +52,8 @@ func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
 	var resultLinks []*model.Link
 	var dbLinks []links.Link
 	dbLinks = links.GetAll()
-	for _, link := range dbLinks{
-		resultLinks = append(resultLinks, &model.Link{ID:link.ID, Title:link.Title, Address:link.Address})
+	for _, link := range dbLinks {
+		resultLinks = append(resultLinks, &model.Link{ID: link.ID, Title: link.Title, Address: link.Address})
 	}
 	return resultLinks, nil
 }
