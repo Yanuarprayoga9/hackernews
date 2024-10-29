@@ -1,0 +1,8 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: dbpass
+      MYSQL_DATABASE: hackernews
+    ports:
+      - "3306:3306"  # Maps MySQL port in the container to the host
